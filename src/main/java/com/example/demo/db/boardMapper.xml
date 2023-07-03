@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+  <select id="findAll" resultType="boardVO">
+    select no, title, writer from (select rownum n, no, title, writer from (select * from board order by b_ref desc, b_level))a where a.n between #{start} and #{end};
+  </select>
+ 
+ 	<select id="findByNo" resultType="boardVO">
+ 		select * from board where no = #{no}
+ 	</select>
+ 	
+ 	<insert id="insert" parameterType="boardVO">
+ 	insert into board(no,title,writer,pwd,content,regdate,hit,fname,b_ref,b_level,b_step) values(#{no},#{title},#{writer},#{pwd},#{content},sysdate,0,#{fname},#{b_ref},#{b_level},#{b_step})
+ 	</insert>
+ 	
+ 	<select id="getNextNo" resultType="java.lang.Integer">
+ 		select nvl(max(no),0)+1 from board
+ 	</select>
+ 	
+ 	<update id="updateHit">
+ 		update board set hit=hit+1 where no = #{no}
+ 	</update>
+ 	
+ 	<update id="updateStep">
+ 		update board set b_step = b_step+1 where b_ref = #{b_ref} and b_step > #{b_step}
+ 	</update>
+ 	
+ 	<update id="update" parameterType="boardVO">
+ 		update board set title=#{title},content=#{content},fname=#{fname} where no=#{no} and pwd=#{pwd}
+ 	</update>
+ 	
+ 	<delete id="delete" parameterType="boardVO">
+ 		delete board where no = #{no} and pwd = #{pwd}
+ 	</delete>
+</mapper>
